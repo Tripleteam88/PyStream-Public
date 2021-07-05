@@ -151,7 +151,7 @@ def download_streams(streams):
 
     # File path
     cwd = os.getcwd()
-    path = os.path.join(cwd, 'Audio Scripts','Audios')
+    path = os.path.join(cwd, 'Audios')
 
     i = 1
     for stream in streams:
@@ -206,7 +206,7 @@ streams = []
 
 # Order of  use (how to use the downloader program)
 cwd = os.getcwd()
-filepath = os.path.join(cwd, 'Audio Scripts', 'urls.txt')   # Relative to root directory
+filepath = os.path.join(cwd, 'urls.txt')   # Relative to root directory
 q = read_urls(filepath) # Save the queue list to a variable
 yt_list = convert_queue(q)  # Pass the queue list variable to the convert_queue function
 streams = ready_audio_queue(yt_list)    # Finially save the list of streams to another variable 
