@@ -5,6 +5,7 @@ Audio downloader for pystream project
 Sole purpose is to download audio streams of videos and then convert them to mp3 files via renaming.
 '''
 from pytube import YouTube, Playlist
+from pytube.exceptions import *
 import os
 
 
@@ -58,9 +59,67 @@ def convert_queue(queue: list):
     --------------------
     Returns list of youtube objects
     '''
-    yt_list = []
+    yt_list = []; skipped = [];
     for i in range(len(queue)):
-        yt_list.append(YouTube(queue[i]))
+        
+        # Check if link is valid
+        try:
+            yt_list.append(YouTube(queue[i]))
+        except RegexMatchError:
+            print('Cannot use:', queue[i])
+            skipped.append(queue[i])
+        
+    # Check availibility of videos
+    print('Checking for video availibility...')
+    
+    i = 0
+    for yt in yt_list:
+
+        try:
+            yt.check_availability()
+        except VideoPrivate:
+
+            # Error for video link
+            if '/watch?' in queue[i]:
+                print(f'Video: https://www.youtube.com/watch?v={yt.video_id} is a PRIVATE VIDEO')
+                print('https://www.youtube.com/watch?v=' + yt_list[i].video_id, 'is being removed')
+                skipped.append('Video: https://www.youtube.com/watch?v=' + yt_list[i].video_id)
+                del yt_list[i]
+
+            # Error for playlist link
+            elif '/playlist?' in queue[i]:
+                print(f'Playlist: https://www.youtube.com/playlist?v={yt.video_id} is a PRIVATE VIDEO')
+                print('https://www.youtube.com/playlist?v=' + yt_list[i].video_id, 'is being removed')
+                skipped.append('Video: https://www.youtube.com/playlist?v=' + yt_list[i].video_id)
+                del yt_list[i]
+        except VideoUnavailable:
+
+            # Error for video link
+            if '/watch?' in queue[i]:
+                print(f'Video: https://www.youtube.com/watch?v={yt.video_id} is UNAVAILIBLE')
+                print('https://www.youtube.com/watch?v=' + yt_list[i].video_id, 'is being removed')
+                skipped.append('Video: https://www.youtube.com/watch?v=' + yt_list[i].video_id)
+                del yt_list[i]
+
+            # Error for playlist link
+            elif '/playlist?' in queue[i]:
+                print(f'Playlist: https://www.youtube.com/playlist?v={yt.video_id} is a PRIVATE VIDEO')
+                print('https://www.youtube.com/playlist?v=' + yt_list[i].video_id, 'is being removed')
+                skipped.append('Video: https://www.youtube.com/playlist?v=' + yt_list[i].video_id)
+                del yt_list[i]
+        i += 1
+
+    # Write skipped videos to a file
+    if len(skipped) > 0:
+        print('Logging skipped')
+        skipped_log = open('skipped.txt', 'w')
+
+        for i in range(len(skipped)):    
+            skipped_log.write(skipped[i] + "\n")
+        
+        skipped_log.close()
+    else: 
+        pass
 
     return yt_list
 
@@ -75,6 +134,7 @@ def ready_audio_queue(yt_list: list):
     streams = []
     for yt in yt_list:
         streams.append(yt.streams.get_audio_only())
+        
         
     return streams
 
