@@ -48,7 +48,6 @@ def read_urls(filepath: str):
 
     # Store all individual video links in the queue
     queue = video_urls
-    print(len(queue) == len(video_urls))
     
     return queue
 
@@ -90,10 +89,14 @@ def download_streams(streams):
     print('Preparing to download streams...')
     print('Audios folder will be created if it does not already exist')
 
+    # File path
+    cwd = os.getcwd()
+    path = os.path.join(cwd, 'Audio Scripts','Audios')
+
     i = 1
     for stream in streams:
         print(f'Download queue: Commencing download number {i}')
-        stream.download('Audios')
+        stream.download(path)
         print(f'Download({i}) has finished!')
         i += 1
 
