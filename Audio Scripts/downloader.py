@@ -103,7 +103,7 @@ def convert_queue(queue: list):
 
             # Error for playlist link
             elif '/playlist?' in queue[i]:
-                print(f'Playlist: https://www.youtube.com/playlist?v={yt.video_id} is a PRIVATE VIDEO')
+                print(f'Playlist: https://www.youtube.com/playlist?v={yt.video_id} is UNAVAILIBLE')
                 print('https://www.youtube.com/playlist?v=' + yt_list[i].video_id, 'is being removed')
                 skipped.append('Video: https://www.youtube.com/playlist?v=' + yt_list[i].video_id)
                 del yt_list[i]
