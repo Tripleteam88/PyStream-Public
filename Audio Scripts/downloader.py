@@ -7,6 +7,7 @@ Sole purpose is to download audio streams of videos and then convert them to mp3
 from pytube import YouTube, Playlist
 from pytube.exceptions import *
 import os
+from sys import exit
 
 
 def read_urls(filepath: str):
@@ -16,7 +17,6 @@ def read_urls(filepath: str):
     Returns: list of urls
     '''
     print("Reading links...")
-
 
     urls = open(filepath, 'r')
     queue = urls.readlines()
@@ -204,13 +204,23 @@ queue = []
 yt_list = []
 streams = []
 
+
+
 # Order of  use (how to use the downloader program)
 cwd = os.getcwd()
 filepath = os.path.join(cwd, 'urls.txt')   # Relative to root directory
-q = read_urls(filepath) # Save the queue list to a variable
-yt_list = convert_queue(q)  # Pass the queue list variable to the convert_queue function
-streams = ready_audio_queue(yt_list)    # Finially save the list of streams to another variable 
-download_streams(streams)   # Pass the stream list to the download function
+try:
+    q = read_urls(filepath) # Save the queue list to a variable
+    yt_list = convert_queue(q)  # Pass the queue list variable to the convert_queue function
+    streams = ready_audio_queue(yt_list)    # Finially save the list of streams to another variable 
+    download_streams(streams)   # Pass the stream list to the download function
+except FileNotFoundError:
+    print('\nDOWNLOADER ERROR: This file does not exist\n')
+    print('Please confirm that the file exists and the file path is correct')
+    print('If the error persists again try running the script via command line or through the IDLE text editor')
+    print('-EXITING DOWNLOADER-')
+    exit()
+
 
 # Rename files
 mp4_paths = generate_mp4_paths()
