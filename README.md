@@ -1,6 +1,4 @@
 # PyStream-Public
-This is where I will release portions of usable code from my personal project "PyStream"
-I am not releasing more details for the time being.
 
 ##### What is PyStream?
 
