@@ -8,6 +8,7 @@ from pytube import YouTube, Playlist
 from pytube.exceptions import *
 import os
 from sys import exit
+from moviepy.editor import *
 
 
 def read_urls(filepath: str):
@@ -152,52 +153,30 @@ def download_streams(streams):
     # File path
     cwd = os.getcwd()
     path = os.path.join(cwd, 'Audios')
-
+    print('PATH: ', path)
     i = 1
     for stream in streams:
         print(f'Download queue: Commencing download number {i}')
         stream.download(path)
+        
         print(f'Download({i}) has finished!')
         i += 1
+        convert(path) # Test conversion
 
-def generate_mp4_paths():
-    '''
-    Creates list of mp4 file paths in 'Audios' directory
-    ----------------------
-    Retuns: list of mp4 file paths
-    '''
 
-    # Grab names of all files
-    mp4_files = []
-    mp4_files = os.listdir('Audios')
-    # Create new list of mp4 file paths with mp4 filenames
-    mp4_filepaths = []
-    for mp4 in mp4_files:
-        mp4_filepaths.append(os.path.join('Audios', mp4))
-
-    return mp4_filepaths
+def convert(mp4Path):
+    print("Now converting", mp4Path)
+    # Grab the audio content from the file
+    try:
+        audioclip = AudioFileClip(mp4Path)
+      
+        audioclip.write_audiofile(mp4Path.replace('.mp4', '.mp3'))
+        audioclip.close()
+    except OSError:
         
+        pass
 
-def mkmp3(mp4_filepaths):
-    '''
-    Changes the file extension of all mp4 files in the Audios folder
-    -----------------------
-    Returns nothing: void
-    '''
-    print('Please wait...')
-    print("Converting all files to mp3 format")
 
-    for mp4 in mp4_filepaths:
-        # Create new mp3 path string for each and every mp4 path string
-        mp3_filepath = mp4.replace('.mp4', '.mp3')
-        # Use mp3 string to rename the old mp4 file; via its old file path
-        try:
-            os.rename(mp4, mp3_filepath)
-        except FileExistsError:
-            print(f"File: '{mp3_filepath}' already exists")
-            print("Aborting conversion")
-            pass
-    print('All files converted!')
 
 # Lists (used as parameters for next function)
 queue = []
@@ -222,6 +201,3 @@ except FileNotFoundError:
     exit()
 
 
-# Rename files
-mp4_paths = generate_mp4_paths()
-mkmp3(mp4_paths)
